@@ -2,8 +2,8 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
   def change
     create_table :geolocations do |t|
       t.uuid :uuid, default: -> { 'gen_random_uuid()' }, null: false
-      t.number :provider_type, null: false
-      t.string :provider_id, null: false
+      t.string :provider_type, null: false
+      t.numeric :provider_id, null: false
       t.string :ip_address, null: false
       t.string :ip_type, null: false
       t.string :continent_code, null: false
@@ -19,5 +19,7 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
+
+    add_index :geolocations, [:provider_id, :provider_type], unique: true
   end
 end
