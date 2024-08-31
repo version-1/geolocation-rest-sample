@@ -1,5 +1,5 @@
 class Geolocation < ApplicationRecord
-  PROVIDERS = %i(ipstack)
+  PROVIDERS = %i[ipstack].freeze
 
   validates :provider_code, presence: true, inclusion: { in: PROVIDERS.map(&:to_s) }
 
@@ -32,7 +32,7 @@ class Geolocation < ApplicationRecord
   end
 
   def timezone
-    provider.timezon if provider.respond_to?(:timezone)
+    provider.timezone if provider.respond_to?(:timezone)
   end
 
   def connection
@@ -44,9 +44,23 @@ class Geolocation < ApplicationRecord
       "GeolocationProviders::#{provider_code.camelize}".constantize
     end
 
-    def from(provider_code, json)
+    def from(provider_code, json = {})
+      klass = provider_class(provider_code)
+      return unless klass.respond_to?(:from)
+
       # INFO: delegate parse json data to sub classes for providers
-      new(provider_class(provider_code).from(json))
+      new(klass.from(json.with_indifferent_access))
+    end
+
+    def add!(provider_code:, ip_or_hostname:)
+      klass = provider_class(provider_code)
+      return unless klass.respond_to?(:client)
+
+      json = klass.client.search(ip_or_hostname)
+      record = from(provider_code, json)
+      return if exists?(ip_address: record.ip_address)
+
+      record.save!
     end
   end
 end

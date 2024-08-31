@@ -18,15 +18,16 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
       t.string :city, null: false
       t.string :zip, null: false
 
+      t.string :radius
+      t.string :msa
+      t.string :dma
+
       t.string :timezone_code, null: false
       t.string :currency_code, null: false
 
       t.jsonb :raw_data, null: false, default: {}
 
-
       t.timestamps
     end
-
-    add_index :geolocations, [:provider_id, :provider_type], unique: true
   end
 end

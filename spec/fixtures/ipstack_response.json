@@ -1,0 +1,81 @@
+{
+  "ip": "162.158.146.57",
+  "type": "ipv4",
+  "continent_code": "NA",
+  "continent_name": "North America",
+  "country_code": "CA",
+  "country_name": "Canada",
+  "region_code": "BC",
+  "region_name": "British Columbia",
+  "city": "West End",
+  "zip": "V5K 1A1",
+  "latitude": 49.2752799987793,
+  "longitude": -123.13249969482422,
+  "msa": null,
+  "dma": null,
+  "radius": null,
+  "ip_routing_type": "fixed",
+  "connection_type": "tx",
+  "location": {
+      "geoname_id": 6178582,
+      "capital": "Ottawa",
+      "languages": [
+          {
+              "code": "en",
+              "name": "English",
+              "native": "English"
+          },
+          {
+              "code": "fr",
+              "name": "French",
+              "native": "Fran\u00e7ais"
+          }
+      ],
+      "country_flag": "https://assets.ipstack.com/flags/ca.svg",
+      "country_flag_emoji": "\\ud83c\\udde8\\ud83c\\udde6",
+      "country_flag_emoji_unicode": "U+1F1E8 U+1F1E6",
+      "calling_code": "1",
+      "is_eu": false
+  },
+  "time_zone": {
+      "id": "America/Vancouver",
+      "current_time": "2024-08-31T14:20:40-07:00",
+      "gmt_offset": -25200,
+      "code": "PDT",
+      "is_daylight_saving": true
+  },
+  "currency": {
+      "code": "CAD",
+      "name": "Canadian Dollar",
+      "plural": "Canadian dollars",
+      "symbol": "CA$",
+      "symbol_native": "$"
+  },
+  "connection": {
+      "asn": 13335,
+      "isp": "Cloudflare",
+      "sld": null,
+      "tld": null,
+      "carrier": "cloudflare",
+      "home": false,
+      "organization_type": "Internet Hosting Services",
+      "isic_code": "J6311",
+      "naics_code": "518210"
+  },
+  "security": {
+      "is_proxy": false,
+      "proxy_type": null,
+      "is_crawler": false,
+      "crawler_name": null,
+      "crawler_type": null,
+      "is_tor": false,
+      "threat_level": "low",
+      "threat_types": null,
+      "proxy_last_detected": null,
+      "proxy_level": null,
+      "vpn_service": null,
+      "anonymizer_status": null,
+      "hosting_facility": false
+  }
+}
+
