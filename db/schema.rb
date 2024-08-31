@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_30_232511) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_31_172037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,5 +38,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_30_232511) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id", "provider_type"], name: "index_geolocations_on_provider_id_and_provider_type", unique: true
+  end
+
+  create_table "geolocations_locations", force: :cascade do |t|
+    t.string "geoname_id", null: false
+    t.string "capital", null: false
+    t.string "country_flag", null: false
+    t.string "country_flag_emoji", null: false
+    t.string "country_flag_emoji_unicode", null: false
+    t.string "calling_code", null: false
+    t.boolean "is_eu", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 end
