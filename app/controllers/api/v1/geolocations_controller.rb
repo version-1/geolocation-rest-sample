@@ -1,6 +1,6 @@
 module Api
   module V1
-    class GeolocationsController < ActionController::API
+    class GeolocationsController < ApplicationController
       def index
         render json: Geolocation.all
       end

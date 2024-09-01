@@ -2,6 +2,7 @@ class ErrorSerializer < ActiveModelSerializers::Model
   attributes :id, :status, :code, :title, :links, :detail, :source, :meta
 
   class << self
+    # FIXME: Need to save error id somewhere to track it later when running this app in production.
     def not_found(_e)
       new(
         id: SecureRandom.uuid,
