@@ -19,9 +19,8 @@ class GeolocationSerializer < ActiveModel::Serializer
     :dma,
     :timezone_code,
     :currency_code,
-    :radius,
-    :msa,
-    :dma
+    :created_at,
+    :updated_at
   )
 
   def id

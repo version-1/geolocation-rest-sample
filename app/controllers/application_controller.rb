@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
   rescue_from StandardError do |e|
     raise e unless Rails.env.production?
 
-    render json: ErrorSerilaizer.internal_server_error(e), status: :internal_server_error
+    render json: ErrorSerializer.internal_server_error(e), status: :internal_server_error
   end
 
   rescue_from ActiveRecord::RecordNotFound do |e|
