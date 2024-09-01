@@ -1,28 +1,28 @@
 module Api
   module V1
     class GeolocationsController < ActionController::API
-      # def index
-      #   render json: { api: 'OK' }
-      # end
+      def index
+        render json: Geolocation.all
+      end
 
       def create
         Geolocation.add!(create_params)
 
-        # FIXME: render jsonapi
-        render json: {}, status: :created
+        render json: { data: nil }, status: :created
       rescue => e
+        render json: ErrorSerializer.internal_server_error(e), status: :internal_server_error
         # FIXME: log error and render jsonapi error
       end
 
-      # def show
-      #   render json: { api: 'OK' }
-      # end
+      def show
+        render json: geolocation
+      end
 
       def destroy
         if geolocation.destroy
-          render json: { api: 'OK' }
+          render json: geolocation
         else
-          render json: { api: 'ERROR' }
+          render json: ErrorSerialzer.new(geolocation), status: :internal_server_error
         end
       end
 
@@ -33,7 +33,7 @@ module Api
       end
 
       def geolocation
-        @geolocation ||= Geolocation.find(params[:id])
+        @geolocation ||= Geolocation.find_by!(uuid: params[:id])
       end
     end
   end
