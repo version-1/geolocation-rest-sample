@@ -1,6 +1,7 @@
-class GeolocationSerializer < ActiveModelSerializers::Model
+class GeolocationSerializer < ActiveModel::Serializer
   attributes(
     :provider_code,
+    :ip_or_hostname,
     :ip_address,
     :ip_type,
     :latitude,
@@ -23,27 +24,23 @@ class GeolocationSerializer < ActiveModelSerializers::Model
     :dma
   )
 
-  attribute :id do
+  def id
     object.uuid
   end
 
-  attribute :location do
-    object.location
+  attribute :location do |serializer|
+    serializer.object.location
   end
 
-  attribute :connection do
-    object.connection
+  attribute :connection do |serializer|
+    serializer.object.connection
   end
 
-  attribute :currency do
-    object.currency
+  attribute :currency do |serializer|
+    serializer.object.currency
   end
 
-  attribute :timezone do
-    object.timezone
-  end
-
-  attribute :connection do
-    object.connection
+  attribute :timezone do |serializer|
+    serializer.object.timezone
   end
 end

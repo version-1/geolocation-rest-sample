@@ -4,7 +4,7 @@ module GeolocationProviders
     attr_accessor :data
 
     def initialize(params)
-      @data = params
+      @data = params.with_indifferent_access
     end
 
     def location
