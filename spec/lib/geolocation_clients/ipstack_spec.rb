@@ -13,10 +13,11 @@ RSpec.describe GeolocationClients::Ipstack do
 
   describe '#search' do
     let(:client) { double('ipstack client dummy') }
+    let(:response_body) { File.read('spec/fixtures/ipstack_response.json') }
     let(:raw_response) do
       double('raw response').tap do |d|
         allow(d).to receive(:code).and_return('200')
-        allow(d).to receive(:body).and_return(File.read('spec/fixtures/ipstack_response.json'))
+        allow(d).to receive(:body).and_return(response_body)
       end
     end
     let(:response) { HttpClient::Response.new(raw_response) }
@@ -27,9 +28,7 @@ RSpec.describe GeolocationClients::Ipstack do
     end
 
     it 'returns a response' do
-      res = subject.search('ip_or_hostname')
-      expect(res.status).to eq(200)
-      expect(res.json).to_not eq('')
+      expect(subject.search('ip_or_hostname')).to eq(JSON.parse(response_body))
     end
 
     context 'when request is not successful' do

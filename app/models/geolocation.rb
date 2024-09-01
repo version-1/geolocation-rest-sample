@@ -59,7 +59,10 @@ class Geolocation < ApplicationRecord
       record = from(DEFAULT_PROVIDER, json)
       record.ip_or_hostname = ip_or_hostname
 
-      return if exists?(ip_or_hostname: record.ip_or_hostname, ip_address: record.ip_address)
+      if exists?(ip_or_hostname: record.ip_or_hostname)
+        record.errors.add(:base, "Record already exists: #{ip_or_hostname}")
+        raise ActiveRecord::RecordInvalid, record
+      end
 
       record.save!
     end

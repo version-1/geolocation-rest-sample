@@ -19,7 +19,7 @@ class ErrorSerializer < ActiveModelSerializers::Model
         status: 400,
         code: 'record_invalid',
         title: 'Record invalid',
-        detail: _e.record.errors.full_messages.join(', ')
+        detail: e.record.errors.full_messages.join(', ')
       )
     end
 

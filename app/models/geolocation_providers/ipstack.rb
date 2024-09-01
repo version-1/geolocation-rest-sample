@@ -24,7 +24,7 @@ module GeolocationProviders
     end
 
     class << self
-      CLIENT = GeolocationClients::Ipstack.new(ENV['IPSTACK_API_KEY'])
+      CLIENT = GeolocationClients::Ipstack.new(ENV.fetch('IPSTACK_API_KEY'))
 
       def from(json = {})
         json.slice(

@@ -9,8 +9,6 @@ module Api
         Geolocation.add!(create_params[:ip_or_hostname])
 
         render json: { data: nil }, status: :created
-      rescue => e
-        render json: ErrorSerializer.internal_server_error(e), status: :internal_server_error
       end
 
       def show

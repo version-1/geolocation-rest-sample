@@ -21,7 +21,7 @@ module GeolocationClients
         res = response
       end
 
-      res
+      res&.json
     rescue => e
       Rails.logger.error(e)
       raise e if e.is_a?(GeolocationClients::Error::RequestError)

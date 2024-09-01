@@ -1,3 +1,5 @@
+require 'net/http'
+
 module HttpClient
   class Base
     attr_reader :logger, :base_url, :default_params

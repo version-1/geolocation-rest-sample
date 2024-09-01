@@ -189,8 +189,8 @@ describe Geolocation do
         allow(Geolocation).to receive(:exists?).and_return(true)
       end
 
-      it 'nothing change' do
-        expect { subject }.to change { Geolocation.count }.by(0)
+      it 'raise record invalid error' do
+        expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
   end
