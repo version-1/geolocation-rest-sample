@@ -1,7 +1,9 @@
 class Geolocation < ApplicationRecord
   PROVIDERS = %i[ipstack].freeze
+  DEFAULT_PROVIDER = :ipstack
 
   validates :provider_code, presence: true, inclusion: { in: PROVIDERS.map(&:to_s) }
+  validates :ip_or_hostname, presence: true
 
   validates :latitude, presence: true
   validates :longitude, presence: true
@@ -13,9 +15,6 @@ class Geolocation < ApplicationRecord
   validates :region_name, presence: true
   validates :city, presence: true
   validates :zip, presence: true
-
-  validates :timezone_code, presence: true
-  validates :currency_code, presence: true
 
   validates :raw_data, presence: true
 
@@ -41,7 +40,7 @@ class Geolocation < ApplicationRecord
 
   class << self
     def provider_class(provider_code)
-      "GeolocationProviders::#{provider_code.camelize}".constantize
+      "GeolocationProviders::#{provider_code.to_s.camelize}".constantize
     end
 
     def from(provider_code, json = {})
@@ -52,13 +51,15 @@ class Geolocation < ApplicationRecord
       new(klass.from(json.with_indifferent_access))
     end
 
-    def add!(provider_code:, ip_or_hostname:)
-      klass = provider_class(provider_code)
+    def add!(ip_or_hostname)
+      klass = provider_class(DEFAULT_PROVIDER)
       return unless klass.respond_to?(:client)
 
       json = klass.client.search(ip_or_hostname)
-      record = from(provider_code, json)
-      return if exists?(ip_address: record.ip_address)
+      record = from(DEFAULT_PROVIDER, json)
+      record.ip_or_hostname = ip_or_hostname
+
+      return if exists?(ip_or_hostname: record.ip_or_hostname, ip_address: record.ip_address)
 
       record.save!
     end

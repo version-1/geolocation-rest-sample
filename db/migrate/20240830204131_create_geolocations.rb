@@ -4,6 +4,7 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
       t.uuid :uuid, default: -> { 'gen_random_uuid()' }, null: false
       t.string :provider_code, null: false
 
+      t.string :ip_or_hostname, null: false
       t.string :ip_address, null: false
       t.string :ip_type, null: false
       t.float :latitude, null: false
@@ -21,13 +22,15 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
       t.string :radius
       t.string :msa
       t.string :dma
-
-      t.string :timezone_code, null: false
-      t.string :currency_code, null: false
+      t.string :currency_code
+      t.string :timezone_code
 
       t.jsonb :raw_data, null: false, default: {}
 
       t.timestamps
     end
+
+    add_index :geolocations, :uuid, unique: true
+    add_index :geolocations, %i[ip_or_hostname ip_address], unique: true
   end
 end

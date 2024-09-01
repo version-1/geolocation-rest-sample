@@ -6,12 +6,11 @@ module Api
       end
 
       def create
-        Geolocation.add!(create_params)
+        Geolocation.add!(create_params[:ip_or_hostname])
 
         render json: { data: nil }, status: :created
       rescue => e
         render json: ErrorSerializer.internal_server_error(e), status: :internal_server_error
-        # FIXME: log error and render jsonapi error
       end
 
       def show
@@ -29,7 +28,7 @@ module Api
       private
 
       def create_params
-        params.require(:geolocation).permit(:provider, :ip_or_hostname)
+        params.require(:geolocation).permit(:ip_or_hostname)
       end
 
       def geolocation

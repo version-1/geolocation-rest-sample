@@ -26,8 +26,10 @@ RSpec.describe HttpClient::Base do
     let(:path) { 'path' }
     let(:params) { { key: 'value' } }
     let(:response) do
-      res = Net::HTTPResponse.new('1.1', '200', '{ "message": "ok" }')
-      HttpClient::Response.new(res)
+      double('response').tap do |d|
+        allow(d).to receive(:body).and_yield('{ "message": "ok" }')
+        allow(d).to receive(:code).and_return('200')
+      end
     end
 
     before do
@@ -51,8 +53,10 @@ RSpec.describe HttpClient::Base do
 
       context 'when request is not successful' do
         let(:response) do
-          res = Net::HTTPResponse.new('1.1', '400', '{ "error": "error" }')
-          HttpClient::Response.new(res)
+          double('response').tap do |d|
+            allow(d).to receive(:body).and_yield('{ "error": "error" }')
+            allow(d).to receive(:code).and_return('400')
+          end
         end
 
         it 'yields the response' do

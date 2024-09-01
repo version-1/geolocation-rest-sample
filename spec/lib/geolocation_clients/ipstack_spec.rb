@@ -44,7 +44,7 @@ RSpec.describe GeolocationClients::Ipstack do
         it 'raise request error' do
           expect do
             subject.search('ip_or_hostname')
-          end.to raise_error(GeolocationClients::RequestError)
+          end.to raise_error(GeolocationClients::Error::RequestError)
         end
       end
 
@@ -59,7 +59,7 @@ RSpec.describe GeolocationClients::Ipstack do
         it 'raise request error' do
           expect do
             subject.search('ip_or_hostname')
-          end.to raise_error(GeolocationClients::RequestError)
+          end.to raise_error(GeolocationClients::Error::RequestError)
         end
       end
     end

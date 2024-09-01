@@ -40,14 +40,11 @@ module GeolocationProviders
           :zip,
           :msa,
           :dma,
-          :radius,
+          :radius
         ).merge(
           provider_code: 'ipstack',
           ip_address: json[:ip],
           ip_type: json[:type],
-          msa: json.dig(:location, :metro_code),
-          dma: json.dig(:location, :area_code),
-          radius: json.dig(:location, :radius),
           timezone_code: json.dig(:time_zone, :id),
           currency_code: json.dig(:currency, :code),
           raw_data: json

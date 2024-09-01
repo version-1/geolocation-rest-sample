@@ -15,7 +15,7 @@ module GeolocationClients
       res = nil
       client.get(ip_or_hostname) do |response|
         if error_response?(response) || !response.success?
-          raise GeolocationClients::RequestError.new(response: response, error: nil)
+          raise GeolocationClients::Error::RequestError.new(response: response, error: nil)
         end
 
         res = response
@@ -24,9 +24,9 @@ module GeolocationClients
       res
     rescue => e
       Rails.logger.error(e)
-      raise e if e.is_a?(GeolocationClients::RequestError)
+      raise e if e.is_a?(GeolocationClients::Error::RequestError)
 
-      raise GeolocationClients::RequestError.new(response: nil, error: e)
+      raise GeolocationClients::Error::RequestError.new(response: nil, error: e)
     end
 
     # Determine if the response is an format of error object in ipstack side.

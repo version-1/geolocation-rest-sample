@@ -173,11 +173,12 @@ describe Geolocation do
 
   describe '.add!' do
     let(:json) { JSON.parse(File.read('spec/fixtures/ipstack_response.json')) }
+    let(:ip_or_hostname) { '162.158.146.57' }
     before do
       allow(GeolocationProviders::Ipstack.client).to receive(:search).and_return(json)
     end
 
-    subject { described_class.add!(provider_code: 'ipstack', ip_or_hostname: '') }
+    subject { described_class.add!(ip_or_hostname) }
 
     it 'record added' do
       expect { subject }.to change { Geolocation.count }.by(1)
