@@ -13,27 +13,79 @@ describe GeolocationProviders::Ipstack do
     end
   end
 
-  describe '#location' do
-    it 'should return location data' do
-      expect(subject.location).to eq(params[:location])
+  describe '#serialize' do
+    it 'should return IpstackSerializer' do
+      expect(subject.serialize).to be_a(GeolocationProviders::IpstackSerializer)
     end
-  end
 
-  describe '#currency' do
-    it 'should return currency data' do
-      expect(subject.currency).to eq(params[:currency])
-    end
-  end
-
-  describe '#timezone' do
-    it 'should return timezone data' do
-      expect(subject.timezone).to eq(params[:time_zone])
-    end
-  end
-
-  describe '#connection' do
-    it 'should return connection data' do
-      expect(subject.connection).to eq(params[:connection])
+    it 'should return serialized data' do
+      json = JSON.parse(subject.serialize.serializable_hash.to_json)
+      expect(json).to match(
+        {
+          'provider_code' => 'ipstack',
+          'location' => {
+            'geoname_id' => 6_178_582,
+            'capital' => 'Ottawa',
+            'languages' => [
+              {
+                'code' => 'en',
+                'name' => 'English',
+                'native' => 'English'
+              },
+              {
+                'code' => 'fr',
+                'name' => 'French',
+                'native' => 'Français'
+              }
+            ],
+            'country_flag' => 'https://assets.ipstack.com/flags/ca.svg',
+            'country_flag_emoji' => '\ud83c\udde8\ud83c\udde6',
+            'country_flag_emoji_unicode' => 'U+1F1E8 U+1F1E6',
+            'calling_code' => '1',
+            'is_eu' => false
+          },
+          'connection' => {
+            'asn' => 13_335,
+            'isp' => 'Cloudflare',
+            'sld' => nil,
+            'tld' => nil,
+            'carrier' => 'cloudflare',
+            'home' => false,
+            'organization_type' => 'Internet Hosting Services',
+            'isic_code' => 'J6311',
+            'naics_code' => '518210'
+          },
+          'timezone' => {
+            'id' => 'America/Vancouver',
+            'current_time' => '2024-08-31T14:20:40-07:00',
+            'gmt_offset' => -25_200,
+            'code' => 'PDT',
+            'is_daylight_saving' => true
+          },
+          'currency' => {
+            'code' => 'CAD',
+            'name' => 'Canadian Dollar',
+            'plural' => 'Canadian dollars',
+            'symbol' => 'CA$',
+            'symbol_native' => '$'
+          },
+          'security' => {
+            'is_proxy' => false,
+            'proxy_type' => nil,
+            'is_crawler' => false,
+            'crawler_name' => nil,
+            'crawler_type' => nil,
+            'is_tor' => false,
+            'threat_level' => 'low',
+            'threat_types' => nil,
+            'proxy_last_detected' => nil,
+            'proxy_level' => nil,
+            'vpn_service' => nil,
+            'anonymizer_status' => nil,
+            'hosting_facility' => false
+          }
+        }
+      )
     end
   end
 

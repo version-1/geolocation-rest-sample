@@ -1,36 +1,32 @@
 require "rails_helper"
 
 RSpec.describe '/api/v1/geolocations', type: :request do
-  let(:geolocation_jsons) do
-    [
-      File.read(Rails.root.join('spec', 'fixtures', 'seeds', 'geolocation-1.json')),
-      File.read(Rails.root.join('spec', 'fixtures', 'seeds', 'geolocation-2.json')),
-      File.read(Rails.root.join('spec', 'fixtures', 'seeds', 'geolocation-3.json'))
-    ]
-  end
-
   before do
-    geolocation_jsons.each do |json|
-      params = JSON.parse(json)
-      g = Geolocation.from('ipstack', params)
-      g.ip_or_hostname = params['ip']
-      g.save!
-    end
+    FixtureHelper.setup
   end
 
   after do
-    # clean up db
-    Geolocation.delete_all
+    FixtureHelper.teardown
+  end
+
+  let(:email) { user.email }
+  let(:user) { User.first }
+  let(:token) { Auth::Jwt.encode(email) }
+  let(:headers) do
+    {
+      'Authorization': "Bearer #{token}"
+    }
   end
 
   describe 'GET /api/v1/geolocations' do
-    subject { get '/api/v1/geolocations' }
+    subject { get '/api/v1/geolocations', headers: headers }
 
     it 'OK 200' do
       subject
 
-      json = JSON.parse(response.body)
       expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
       expect(json).to match(
         {
           'data' => [
@@ -58,11 +54,21 @@ RSpec.describe '/api/v1/geolocations', type: :request do
                 'timezone_code' => nil,
                 'currency_code' => nil,
                 'created_at' => be_a(String),
-                'updated_at' => be_a(String),
-                'location' => be_a(Hash),
-                'currency' => nil,
-                'timezone' => nil,
-                'connection' => nil
+                'updated_at' => be_a(String)
+              },
+              'relationships' => {
+                'user' => {
+                  'data' => {
+                    'id' => user.uuid,
+                    'type' => 'users'
+                  }
+                },
+                'provider' => {
+                  'data' => {
+                    'id' => Geolocation.first.uuid,
+                    'type' => 'geolocation_providers_ipstacks'
+                  }
+                }
               }
             },
             {
@@ -90,10 +96,20 @@ RSpec.describe '/api/v1/geolocations', type: :request do
                 'currency_code' => 'USD',
                 'created_at' => be_a(String),
                 'updated_at' => be_a(String),
-                'location' => be_a(Hash),
-                'timezone' => be_a(Hash),
-                'currency' => be_a(Hash),
-                'connection' => be_a(Hash)
+              },
+              'relationships' => {
+                'user' => {
+                  'data' => {
+                    'id' => user.uuid,
+                    'type' => 'users'
+                  }
+                },
+                'provider' => {
+                  'data' => {
+                    'id' => Geolocation.second.uuid,
+                    'type' => 'geolocation_providers_ipstacks'
+                  }
+                }
               }
             },
             {
@@ -120,12 +136,67 @@ RSpec.describe '/api/v1/geolocations', type: :request do
                 'timezone_code' => 'America/New_York',
                 'currency_code' => 'USD',
                 'created_at' => be_a(String),
-                'updated_at' => be_a(String),
-                'location' => be_a(Hash),
-                'timezone' => be_a(Hash),
-                'currency' => be_a(Hash),
-                'connection' => be_a(Hash)
+                'updated_at' => be_a(String)
+              },
+              'relationships' => {
+                'user' => {
+                  'data' => {
+                    'id' => user.uuid,
+                    'type' => 'users'
+                  }
+                },
+                'provider' => {
+                  'data' => {
+                    'id' => Geolocation.third.uuid,
+                    'type' => 'geolocation_providers_ipstacks'
+                  }
+                }
               }
+            }
+          ],
+          'included' => [
+            {
+              'id' => user.uuid,
+              'type' => 'users',
+              'attributes' => {
+                'email' => 'jack@example.com',
+                'username' => 'jack',
+                'created_at' => be_a(String),
+                'updated_at' => be_a(String)
+              },
+              'relationships' => {
+                'geolocations' => {
+                  'data' => [
+                    {
+                      'id' => Geolocation.first.uuid,
+                      'type' => 'geolocations'
+                    },
+                    {
+                      'id' => Geolocation.second.uuid,
+                      'type' => 'geolocations'
+                    },
+                    {
+                      'id' => Geolocation.third.uuid,
+                      'type' => 'geolocations'
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'id' => Geolocation.first.uuid,
+              'type' => 'geolocation_providers_ipstacks',
+              'attributes' => be_a(Hash)
+            },
+            {
+              'id' => Geolocation.second.uuid,
+              'type' => 'geolocation_providers_ipstacks',
+              'attributes' => be_a(Hash)
+            },
+            {
+              'id' => Geolocation.third.uuid,
+              'type' => 'geolocation_providers_ipstacks',
+              'attributes' => be_a(Hash)
             }
           ]
         }
@@ -133,19 +204,16 @@ RSpec.describe '/api/v1/geolocations', type: :request do
     end
 
     context 'Not authenticated' do
+      let(:headers) { {} }
       it 'Unauthorized 401' do
+        subject
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'Unexpected error occured' do
       before do
-        allow(Geolocation).to receive(:all).and_raise(StandardError)
-        allow(Rails.env).to receive(:production?).and_return(true)
-      end
-
-      after do
-        # reset stub for cleanup
-        allow(Geolocation).to receive(:all).and_call_original
+        allow_any_instance_of(User).to receive(:geolocations).and_raise(StandardError)
       end
 
       it 'Internal Server Error 500' do
@@ -165,7 +233,9 @@ RSpec.describe '/api/v1/geolocations', type: :request do
       allow(Net::HTTP).to receive(:get_response).and_yield(api_response)
     end
 
-    subject { post '/api/v1/geolocations', params: { 'geolocation' => { 'ip_or_hostname' => ip_or_hostname } } }
+    subject do
+      post '/api/v1/geolocations', params: { 'geolocation' => { 'ip_or_hostname' => ip_or_hostname } }, headers: headers
+    end
 
     it 'Created 201' do
       subject
@@ -173,21 +243,26 @@ RSpec.describe '/api/v1/geolocations', type: :request do
       expect(response.body).to eq('{"data":null}')
     end
 
-    it 'Bad Request 400' do
-    end
+    context 'ip or hostname is already exists' do
+      let(:ip_or_hostname) { '93.184.215.14' }
 
-    it 'Bad Request Alreaady Exists 400' do
+      it 'Bad Request Alreaady Exists 400' do
+        subject
+        expect(response).to have_http_status(:bad_request)
+      end
     end
 
     context 'Not authenticated' do
+      let(:headers) { {} }
       it 'Unauthorized 401' do
+        subject
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'Unexpected error occured' do
       before do
         allow(Geolocation).to receive(:add!).and_raise(StandardError)
-        allow(Rails.env).to receive(:production?).and_return(true)
       end
 
       it 'Internal Server Error 500' do
@@ -199,7 +274,7 @@ RSpec.describe '/api/v1/geolocations', type: :request do
 
   describe 'GET /api/v1/geolocations/:uuid' do
     let(:uuid) { Geolocation.first.uuid }
-    subject { get "/api/v1/geolocations/#{uuid}" }
+    subject { get "/api/v1/geolocations/#{uuid}", headers: headers }
 
     it 'OK 200' do
       subject
@@ -207,7 +282,7 @@ RSpec.describe '/api/v1/geolocations', type: :request do
       expect(JSON.parse(response.body)).to match(
         {
           'data' => {
-            'id' => Geolocation.first.uuid,
+            'id' => uuid,
             'type' => 'geolocations',
             'attributes' => {
               'provider_code' => 'ipstack',
@@ -230,13 +305,58 @@ RSpec.describe '/api/v1/geolocations', type: :request do
               'timezone_code' => nil,
               'currency_code' => nil,
               'created_at' => be_a(String),
-              'updated_at' => be_a(String),
-              'location' => be_a(Hash),
-              'currency' => nil,
-              'timezone' => nil,
-              'connection' => nil
+              'updated_at' => be_a(String)
+            },
+            'relationships' => {
+              'user' => {
+                'data' => {
+                  'id' => user.uuid,
+                  'type' => 'users'
+                }
+              },
+              'provider' => {
+                'data' => {
+                  'id' => uuid,
+                  'type' => 'geolocation_providers_ipstacks'
+                }
+              }
             }
-          }
+          },
+          'included' => [
+            {
+              'id' => user.uuid,
+              'type' => 'users',
+              'attributes' => {
+                'email' => 'jack@example.com',
+                'username' => 'jack',
+                'created_at' => be_a(String),
+                'updated_at' => be_a(String)
+              },
+              'relationships' => {
+                'geolocations' => {
+                  'data' => [
+                    {
+                      'id' => Geolocation.first.uuid,
+                      'type' => 'geolocations'
+                    },
+                    {
+                      'id' => Geolocation.second.uuid,
+                      'type' => 'geolocations'
+                    },
+                    {
+                      'id' => Geolocation.third.uuid,
+                      'type' => 'geolocations'
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'id' => uuid,
+              'type' => 'geolocation_providers_ipstacks',
+              'attributes' => be_a(Hash)
+            }
+          ]
         }
       )
     end
@@ -250,14 +370,16 @@ RSpec.describe '/api/v1/geolocations', type: :request do
     end
 
     context 'Not authenticated' do
+      let(:headers) { {} }
       it 'Unauthorized 401' do
+        subject
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'Unexpected error occured' do
       before do
-        allow(Geolocation).to receive(:find_by!).and_raise(StandardError)
-        allow(Rails.env).to receive(:production?).and_return(true)
+        allow_any_instance_of(User).to receive(:geolocations).and_raise(StandardError)
       end
 
       it 'Internal Server Error 500' do
@@ -270,7 +392,7 @@ RSpec.describe '/api/v1/geolocations', type: :request do
   describe 'DELETE /api/v1/geolocations/:uuid' do
     let(:uuid) { Geolocation.third.uuid }
 
-    subject { delete "/api/v1/geolocations/#{uuid}" }
+    subject { delete "/api/v1/geolocations/#{uuid}", headers: headers }
 
     it 'OK 200' do
       subject
@@ -300,13 +422,54 @@ RSpec.describe '/api/v1/geolocations', type: :request do
               'timezone_code' => 'America/New_York',
               'currency_code' => 'USD',
               'created_at' => be_a(String),
-              'updated_at' => be_a(String),
-              'location' => be_a(Hash),
-              'timezone' => be_a(Hash),
-              'currency' => be_a(Hash),
-              'connection' => be_a(Hash)
+              'updated_at' => be_a(String)
+            },
+            'relationships' => {
+              'user' => {
+                'data' => {
+                  'id' => user.uuid,
+                  'type' => 'users'
+                }
+              },
+              'provider' => {
+                'data' => {
+                  'id' => uuid,
+                  'type' => 'geolocation_providers_ipstacks'
+                }
+              }
             }
-          }
+          },
+          'included' => [
+            {
+              'id' => user.uuid,
+              'type' => 'users',
+              'attributes' => {
+                'email' => 'jack@example.com',
+                'username' => 'jack',
+                'created_at' => be_a(String),
+                'updated_at' => be_a(String)
+              },
+              'relationships' => {
+                'geolocations' => {
+                  'data' => [
+                    {
+                      'id' => Geolocation.first.uuid,
+                      'type' => 'geolocations'
+                    },
+                    {
+                      'id' => Geolocation.second.uuid,
+                      'type' => 'geolocations'
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              'id' => uuid,
+              'type' => 'geolocation_providers_ipstacks',
+              'attributes' => be_a(Hash)
+            }
+          ]
         }
       )
     end
@@ -314,7 +477,7 @@ RSpec.describe '/api/v1/geolocations', type: :request do
     context 'Not found resource' do
       let(:uuid) { '00000000-0000-0000-0000-000000000000' }
 
-      subject { delete "/api/v1/geolocations/#{uuid}" }
+      subject { delete "/api/v1/geolocations/#{uuid}", headers: headers }
 
       it 'Not Found 404' do
         subject
@@ -323,14 +486,16 @@ RSpec.describe '/api/v1/geolocations', type: :request do
     end
 
     context 'Not authenticated' do
+      let(:headers) { {} }
       it 'Unauthorized 401' do
+        subject
+        expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'Unexpected error occured' do
       before do
-        allow(Geolocation).to receive(:find_by!).and_raise(StandardError)
-        allow(Rails.env).to receive(:production?).and_return(true)
+        allow_any_instance_of(User).to receive(:geolocations).and_raise(StandardError)
       end
 
       it 'Internal Server Error 500' do

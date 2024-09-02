@@ -1,23 +1,25 @@
 module Api
   module V1
     class GeolocationsController < ApplicationController
+      DEFAULT_INCLUDE_OPTIONS = %w[user provider].freeze
+
       def index
-        render json: Geolocation.all
+        render json: current_user.geolocations, include: DEFAULT_INCLUDE_OPTIONS
       end
 
       def create
-        Geolocation.add!(create_params[:ip_or_hostname])
+        Geolocation.add!(current_user, create_params[:ip_or_hostname])
 
         render json: { data: nil }, status: :created
       end
 
       def show
-        render json: geolocation
+        render json: geolocation, include: DEFAULT_INCLUDE_OPTIONS
       end
 
       def destroy
         if geolocation.destroy
-          render json: geolocation
+          render json: geolocation, include: DEFAULT_INCLUDE_OPTIONS
         else
           render json: ErrorSerialzer.new(geolocation), status: :internal_server_error
         end
@@ -30,7 +32,7 @@ module Api
       end
 
       def geolocation
-        @geolocation ||= Geolocation.find_by!(uuid: params[:id])
+        @geolocation ||= current_user.geolocations.find_by!(uuid: params[:id])
       end
     end
   end

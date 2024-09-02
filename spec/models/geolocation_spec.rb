@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 describe Geolocation do
+  before do
+    FixtureHelper.setup
+  end
+
+  after do
+    FixtureHelper.teardown
+  end
+
   module GeolocationProviders
     class TestProvider
       def initialize(raw_data)
@@ -53,58 +61,6 @@ describe Geolocation do
 
       it 'returns Ipstack instance' do
         expect(subject.provider).to be_a GeolocationProviders::Ipstack
-      end
-    end
-  end
-
-  describe '#location' do
-    it 'returns location data' do
-      expect(subject.location).to eq(code: 'US')
-    end
-
-    context 'provider doesn\'t have location data' do
-      let(:provider_code) { 'test_provider_without_any_additional_data' }
-      it 'returns nil' do
-        expect(subject.location).to eq(nil)
-      end
-    end
-  end
-
-  describe '#currency' do
-    it 'returns currencty data' do
-      expect(subject.currency).to eq(code: 'USD')
-    end
-
-    context 'provider doesn\'t have location data' do
-      let(:provider_code) { 'test_provider_without_any_additional_data' }
-      it 'returns nil' do
-        expect(subject.currency).to eq(nil)
-      end
-    end
-  end
-
-  describe '#timezone' do
-    it 'returns timezone data' do
-      expect(subject.timezone).to eq(code: 'UTC')
-    end
-
-    context 'provider doesn\'t have location data' do
-      let(:provider_code) { 'test_provider_without_any_additional_data' }
-      it 'returns nil' do
-        expect(subject.timezone).to eq(nil)
-      end
-    end
-  end
-
-  describe '#connection' do
-    it 'returns connection data' do
-      expect(subject.connection).to eq(code: 'DSL')
-    end
-
-    context 'provider doesn\'t have connection data' do
-      let(:provider_code) { 'test_provider_without_any_additional_data' }
-      it 'returns nil' do
-        expect(subject.connection).to eq(nil)
       end
     end
   end
@@ -173,12 +129,13 @@ describe Geolocation do
 
   describe '.add!' do
     let(:json) { JSON.parse(File.read('spec/fixtures/ipstack_response.json')) }
+    let(:user) { User.first }
     let(:ip_or_hostname) { '162.158.146.57' }
     before do
       allow(GeolocationProviders::Ipstack.client).to receive(:search).and_return(json)
     end
 
-    subject { described_class.add!(ip_or_hostname) }
+    subject { described_class.add!(user, ip_or_hostname) }
 
     it 'record added' do
       expect { subject }.to change { Geolocation.count }.by(1)

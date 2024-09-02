@@ -2,6 +2,7 @@ class CreateGeolocations < ActiveRecord::Migration[7.2]
   def change
     create_table :geolocations do |t|
       t.uuid :uuid, default: -> { 'gen_random_uuid()' }, null: false
+      t.references :user, null: false, index: true
       t.string :provider_code, null: false
 
       t.string :ip_or_hostname, null: false

@@ -23,23 +23,14 @@ class GeolocationSerializer < ActiveModel::Serializer
     :updated_at
   )
 
+  belongs_to :user
+
   def id
     object.uuid
   end
 
-  attribute :location do |serializer|
-    serializer.object.location
-  end
-
-  attribute :connection do |serializer|
-    serializer.object.connection
-  end
-
-  attribute :currency do |serializer|
-    serializer.object.currency
-  end
-
-  attribute :timezone do |serializer|
-    serializer.object.timezone
+  # INFO: return provider-specific fields
+  has_one :provider do |serializer|
+    serializer.object.provider
   end
 end

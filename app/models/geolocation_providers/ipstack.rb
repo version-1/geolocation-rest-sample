@@ -1,10 +1,17 @@
 module GeolocationProviders
   class Ipstack
     include ActiveModel::Model
-    attr_accessor :data
+    include ActiveModel::Serialization
+
+    attr_accessor :id, :data
 
     def initialize(params)
-      @data = params.with_indifferent_access
+      @id = params[:id]
+      @data = params.except(:id).with_indifferent_access
+    end
+
+    def serialize
+      GeolocationProviders::IpstackSerializer.new(self)
     end
 
     def location
@@ -21,6 +28,10 @@ module GeolocationProviders
 
     def connection
       data[:connection]
+    end
+
+    def security
+      data[:security]
     end
 
     class << self

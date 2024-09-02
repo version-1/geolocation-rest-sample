@@ -1,6 +1,6 @@
 module Api
   module V1
-    class HealthCheckController < ApplicationController
+    class HealthCheckController < ActionController::API
       def show
         render json: { message: 'ok' }
       end
