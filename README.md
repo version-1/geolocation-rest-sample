@@ -9,6 +9,15 @@ docker compose run --rm api bundle exec rails db:setup
 
 Seeder insert some records into users and geolocation table.
 
+**2. Set IPSTACK_API_KEY**
+
+This api needs [ipstack](https://ipstack.com/) api key. 
+Set IPSTACK_API_KEY in .env
+
+```
+echo "IPSTACK_API_KEY=[ your api key ]" > .env
+```
+
 **2. Run docker compose up**
 
 ```bash
