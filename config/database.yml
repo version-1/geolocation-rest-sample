@@ -15,7 +15,7 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  host: db
+  host: <%= ENV.fetch("DATABASE_HOST") { "db" } %>
   username: geolocation
   password: geolocation # FIXME: Use different passowrd in production
 
