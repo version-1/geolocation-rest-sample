@@ -1,0 +1,75 @@
+{
+    "ip": "172.67.195.98",
+    "type": "ipv4",
+    "continent_code": "NA",
+    "continent_name": "North America",
+    "country_code": "US",
+    "country_name": "United States",
+    "region_code": "CA",
+    "region_name": "California",
+    "city": "San Francisco",
+    "zip": "94107",
+    "latitude": 37.76784896850586,
+    "longitude": -122.39286041259766,
+    "msa": "41860",
+    "dma": "807",
+    "radius": null,
+    "ip_routing_type": "fixed",
+    "connection_type": "tx",
+    "location": {
+        "geoname_id": 5391959,
+        "capital": "Washington D.C.",
+        "languages": [
+            {
+                "code": "en",
+                "name": "English",
+                "native": "English"
+            }
+        ],
+        "country_flag": "https://assets.ipstack.com/flags/us.svg",
+        "country_flag_emoji": "\ud83c\uddfa\ud83c\uddf8",
+        "country_flag_emoji_unicode": "U+1F1FA U+1F1F8",
+        "calling_code": "1",
+        "is_eu": false
+    },
+    "time_zone": {
+        "id": "America/Los_Angeles",
+        "current_time": "2024-09-01T11:31:53-07:00",
+        "gmt_offset": -25200,
+        "code": "PDT",
+        "is_daylight_saving": true
+    },
+    "currency": {
+        "code": "USD",
+        "name": "US Dollar",
+        "plural": "US dollars",
+        "symbol": "$",
+        "symbol_native": "$"
+    },
+    "connection": {
+        "asn": 13335,
+        "isp": "Cloudflare",
+        "sld": null,
+        "tld": null,
+        "carrier": "cloudflare",
+        "home": false,
+        "organization_type": "Internet Hosting Services",
+        "isic_code": "J6311",
+        "naics_code": "518210"
+    },
+    "security": {
+        "is_proxy": false,
+        "proxy_type": null,
+        "is_crawler": false,
+        "crawler_name": null,
+        "crawler_type": null,
+        "is_tor": false,
+        "threat_level": "low",
+        "threat_types": null,
+        "proxy_last_detected": null,
+        "proxy_level": null,
+        "vpn_service": null,
+        "anonymizer_status": null,
+        "hosting_facility": false
+    }
+}

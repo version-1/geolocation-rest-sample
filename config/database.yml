@@ -15,6 +15,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  host: db
+  username: geolocation
+  password: geolocation # FIXME: Use different passowrd in production
+
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -22,7 +26,7 @@ default: &default
 
 development:
   <<: *default
-  database: api_development
+  database: geolocation_rest_development
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -56,7 +60,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: api_test
+  database: geolocation_rest_test
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,6 +84,5 @@ test:
 #
 production:
   <<: *default
-  database: api_production
-  username: api
+  database: geolcation_rest_production
   password: <%= ENV["API_DATABASE_PASSWORD"] %>
