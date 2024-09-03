@@ -1,17 +1,12 @@
 # geolcation-rest-sample
 
+![ci/cd badge](https://github.com/version-1/geolocation-rest-sample/actions/workflows/main.yaml/badge.svg)
+
 ## How to run
 
-**1. Setup DB**
-```bash
-docker compose run --rm api bundle exec rails db:setup
-```
+**1. Set IPSTACK_API_KEY**
 
-Seeder insert some records into users and geolocation table.
-
-**2. Set IPSTACK_API_KEY**
-
-This api needs [ipstack](https://ipstack.com/) api key. 
+This api needs [ipstack](https://ipstack.com/) api key.
 Set IPSTACK_API_KEY in .env
 
 ```
@@ -24,12 +19,21 @@ echo "IPSTACK_API_KEY=[ your api key ]" > .env
 docker compose up
 ```
 
-**3. Access the application at http://localhost:3000/api/v1**
+**3. Setup DB**
 
-**4. Try following endpoints with JWT token.**
+```bash
+docker compose run --rm api bundle exec rails db:setup
+```
+
+Seeder insert some records into users and geolocation table.
+
+
+**4. Access the application at http://localhost:3000/api/v1**
+
+**5. Try following endpoints with JWT token.**
 
 | path | method | body |
-| --- | --- | -- | 
+| --- | --- | -- |
 | /api/v1/geolocations | GET | - |
 | /api/v1/geolocations | POST | { "geolocation": { "ip_or_hostname": [ip_or_hostname] } } |
 | /api/v1/geolocations/:id | GET | - |
